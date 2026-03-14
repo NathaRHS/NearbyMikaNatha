@@ -33,3 +33,10 @@ CREATE TABLE produit_liquette (
     FOREIGN KEY (idcouleur) REFERENCES couleur(id),
     FOREIGN KEY (idtype_manche) REFERENCES type_manche(id)
 );
+
+CREATE TABLE imageProduit (
+    id SERIAL PRIMARY KEY,
+    produit_id INT,
+    url VARCHAR(255),
+    FOREIGN KEY (produit_id) REFERENCES produit(id)
+);

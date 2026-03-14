@@ -1,0 +1,10 @@
+J'ai un petit problème sur la conception de ma base.
+Je crée des tables mysql 
+
+Produit 
+ - id 
+ - c
+
+
+
+j'ai une table produit mais le problème chaque produit a sa specificité exemple : tennis a pointure mais chapeau non alors
