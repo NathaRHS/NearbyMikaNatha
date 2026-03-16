@@ -31,9 +31,13 @@ function AdminPage() {
   const [quickForm, setQuickForm] = useState(initialQuickForm)
   const [quickImageFile, setQuickImageFile] = useState(null)
   const [quickImagePreviewUrl, setQuickImagePreviewUrl] = useState('')
+  const [galleryProductId, setGalleryProductId] = useState('')
+  const [galleryFiles, setGalleryFiles] = useState([])
+  const [galleryPreviewUrls, setGalleryPreviewUrls] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isQuickSaving, setIsQuickSaving] = useState(false)
+  const [isGallerySaving, setIsGallerySaving] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [statusMessage, setStatusMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -61,8 +65,14 @@ function AdminPage() {
       if (quickImagePreviewUrl && quickImagePreviewUrl.startsWith('blob:')) {
         URL.revokeObjectURL(quickImagePreviewUrl)
       }
+
+      galleryPreviewUrls.forEach((previewUrl) => {
+        if (previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(previewUrl)
+        }
+      })
     }
-  }, [imagePreviewUrl, quickImagePreviewUrl])
+  }, [galleryPreviewUrls, imagePreviewUrl, quickImagePreviewUrl])
 
   useEffect(() => {
     void loadLookups()
@@ -158,6 +168,12 @@ function AdminPage() {
     setQuickImagePreviewUrl('')
   }
 
+  function resetGalleryForm() {
+    setGalleryProductId('')
+    setGalleryFiles([])
+    setGalleryPreviewUrls([])
+  }
+
   function handleQuickChange(fieldName, value) {
     setQuickForm((current) => ({
       ...current,
@@ -189,6 +205,21 @@ function AdminPage() {
 
     const objectUrl = URL.createObjectURL(file)
     setQuickImagePreviewUrl(objectUrl)
+  }
+
+  function handleGalleryImageSelection(event) {
+    const files = Array.from(event.target.files ?? [])
+    setGalleryFiles(files)
+
+    setGalleryPreviewUrls((current) => {
+      current.forEach((previewUrl) => {
+        if (previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(previewUrl)
+        }
+      })
+
+      return files.map((file) => URL.createObjectURL(file))
+    })
   }
 
   async function fileToDataUrl(file) {
@@ -236,6 +267,27 @@ function AdminPage() {
       method: 'POST',
       body: JSON.stringify(payload),
     })
+  }
+
+  async function appendProductImages(productId, files) {
+    for (const file of files) {
+      const content = await fileToDataUrl(file)
+      const uploadedFile = await request('/api/uploads', {
+        method: 'POST',
+        body: JSON.stringify({
+          filename: file.name,
+          content,
+        }),
+      })
+
+      await request('/api/images', {
+        method: 'POST',
+        body: JSON.stringify({
+          idproduit: Number(productId),
+          url: uploadedFile.url,
+        }),
+      })
+    }
   }
 
   function buildPayload() {
@@ -335,6 +387,29 @@ function AdminPage() {
       setIsQuickSaving(false)
     }
   }
+
+  async function handleGallerySubmit(event) {
+    event.preventDefault()
+    setIsGallerySaving(true)
+    setStatusMessage('')
+    setErrorMessage('')
+
+    try {
+      await appendProductImages(galleryProductId, galleryFiles)
+      await loadLookups()
+      resetGalleryForm()
+      setStatusMessage('Images supplementaires ajoutees au produit.')
+    } catch (error) {
+      setErrorMessage(error.message)
+    } finally {
+      setIsGallerySaving(false)
+    }
+  }
+
+  const selectedGalleryImages = lookups.images.filter((image) => {
+    const productId = image.produit?.id ?? image.idproduit
+    return Number(productId) === Number(galleryProductId)
+  })
 
   async function handleDelete(record) {
     const confirmed = window.confirm(`Supprimer l'element #${record.id} ?`)
@@ -580,6 +655,81 @@ function AdminPage() {
                   {isQuickSaving ? 'Creation...' : 'Creer le produit complet'}
                 </button>
                 <button className="secondary" type="button" onClick={resetQuickForm}>
+                  Vider
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="adminPanel">
+            <div className="adminPanelHeader">
+              <div>
+                <p className="adminPanelLabel">Galerie produit</p>
+                <h2>Ajouter d'autres images</h2>
+              </div>
+            </div>
+
+            <form className="adminForm" onSubmit={handleGallerySubmit}>
+              <label htmlFor="gallery-product">
+                <span>Produit</span>
+                <select
+                  id="gallery-product"
+                  required
+                  value={galleryProductId}
+                  onChange={(event) => setGalleryProductId(event.target.value)}
+                >
+                  <option value="">Selectionner</option>
+                  {lookups.produits.map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.nom}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label htmlFor="gallery-images">
+                <span>Images supplementaires</span>
+                <input
+                  id="gallery-images"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  required
+                  onChange={handleGalleryImageSelection}
+                />
+              </label>
+
+              {galleryPreviewUrls.length > 0 ? (
+                <div className="adminGalleryPreview">
+                  <span>Apercus avant envoi</span>
+                  <div className="adminGalleryGrid">
+                    {galleryPreviewUrls.map((previewUrl, index) => (
+                      <img key={`${previewUrl}-${index}`} src={previewUrl} alt="" />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              {galleryProductId && selectedGalleryImages.length > 0 ? (
+                <div className="adminGalleryPreview">
+                  <span>Images deja liees au produit</span>
+                  <div className="adminGalleryGrid">
+                    {selectedGalleryImages.map((image) => (
+                      <img key={image.id} src={image.url} alt="" />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="adminActions">
+                <button
+                  className="primary"
+                  disabled={isGallerySaving || !galleryProductId || galleryFiles.length === 0}
+                  type="submit"
+                >
+                  {isGallerySaving ? 'Ajout...' : 'Ajouter les images'}
+                </button>
+                <button className="secondary" type="button" onClick={resetGalleryForm}>
                   Vider
                 </button>
               </div>

@@ -143,12 +143,86 @@ nav ul a:focus-visible::after {
   box-shadow: var(--shadow-card);
 }
 
+.container .productDetail .productMedia {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.container .productDetail .productMainImage {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  cursor: zoom-in;
+  box-shadow: var(--shadow-card);
+}
+
+.container .productDetail .productMainImage img {
+  transition: transform 0.18s ease;
+  will-change: transform;
+}
+
+.container .productDetail .productMainImage.is-zoomed img {
+  transform: scale(1.8);
+}
+
+.container .productDetail .productThumbs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.container .productDetail .productThumb {
+  width: 92px;
+  height: 92px;
+  padding: 0;
+  border: 1px solid #d7deea;
+  border-radius: 18px;
+  background: #ffffff;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.container .productDetail .productThumb.is-active {
+  border-color: #142033;
+  box-shadow: 0 10px 24px rgba(20, 32, 51, 0.12);
+}
+
+.container .productDetail .productThumb img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 .container .productDetail .productDetailImagePlaceholder {
   width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: var(--radius-md);
   background: var(--surface-muted);
   box-shadow: var(--shadow-card);
+}
+
+.container .productDetail .productDetailGalleryPlaceholder {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+.container .productDetail .productDetailThumbsPlaceholder {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.container .productDetail .productDetailThumbPlaceholder {
+  width: 92px;
+  height: 92px;
+  border-radius: 18px;
+  background: var(--surface-muted);
 }
 .container .productDetail .right {
   display: flex;
@@ -298,6 +372,17 @@ nav ul a:focus-visible::after {
 
   .container .productDetail .right {
     padding-inline: 0;
+  }
+
+  .container .productDetail .productMedia,
+  .container .productDetail .productDetailGalleryPlaceholder {
+    grid-template-columns: 1fr;
+  }
+
+  .container .productDetail .productThumbs,
+  .container .productDetail .productDetailThumbsPlaceholder {
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
 

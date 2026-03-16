@@ -30,6 +30,17 @@ function ProductDetailPage() {
   const [quantity, setQuantity] = useState(1)
   const [product, setProduct] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [activeImage, setActiveImage] = useState('')
+  const [isZoomed, setIsZoomed] = useState(false)
+  const [zoomOrigin, setZoomOrigin] = useState('50% 50%')
+
+  function handleMainImageMove(event) {
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const offsetX = ((event.clientX - bounds.left) / bounds.width) * 100
+    const offsetY = ((event.clientY - bounds.top) / bounds.height) * 100
+
+    setZoomOrigin(`${offsetX}% ${offsetY}%`)
+  }
 
   useEffect(() => {
     let isMounted = true
@@ -42,7 +53,9 @@ function ProductDetailPage() {
           description: '',
           prix: 29.99,
           imageUrl: '/images/prod.avif',
+          images: ['/images/prod.avif'],
         })
+        setActiveImage('/images/prod.avif')
         setIsLoading(false)
         return
       }
@@ -52,6 +65,8 @@ function ProductDetailPage() {
 
         if (isMounted && data) {
           setProduct(data)
+          setActiveImage(data.images?.[0] || data.imageUrl)
+          setZoomOrigin('50% 50%')
         }
       } catch {
         if (isMounted) {
@@ -60,7 +75,10 @@ function ProductDetailPage() {
             description: '',
             prix: 29.99,
             imageUrl: '/images/prod.avif',
+            images: ['/images/prod.avif'],
           })
+          setActiveImage('/images/prod.avif')
+          setZoomOrigin('50% 50%')
         }
       } finally {
         if (isMounted) {
@@ -82,9 +100,46 @@ function ProductDetailPage() {
       <section className="productDetail">
         <div className="left">
           {isLoading || !product ? (
-            <div className="productDetailImagePlaceholder" aria-hidden="true"></div>
+            <div className="productDetailGalleryPlaceholder" aria-hidden="true">
+              <div className="productDetailThumbsPlaceholder">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <div className="productDetailThumbPlaceholder" key={index}></div>
+                ))}
+              </div>
+              <div className="productDetailImagePlaceholder"></div>
+            </div>
           ) : (
-            <img src={product.imageUrl} alt="" />
+            <div className="productMedia">
+              <div className="productThumbs">
+                {(product.images || []).slice(0, 4).map((imageUrl, index) => (
+                  <button
+                    key={`${imageUrl}-${index}`}
+                    type="button"
+                    className={`productThumb ${activeImage === imageUrl ? 'is-active' : ''}`}
+                    onMouseEnter={() => setActiveImage(imageUrl)}
+                    onFocus={() => setActiveImage(imageUrl)}
+                    onClick={() => setActiveImage(imageUrl)}
+                  >
+                    <img src={imageUrl} alt="" />
+                  </button>
+                ))}
+              </div>
+              <div
+                className={`productMainImage ${isZoomed ? 'is-zoomed' : ''}`}
+                onMouseEnter={() => setIsZoomed(true)}
+                onMouseLeave={() => {
+                  setIsZoomed(false)
+                  setZoomOrigin('50% 50%')
+                }}
+                onMouseMove={handleMainImageMove}
+              >
+                <img
+                  src={activeImage || product.imageUrl}
+                  alt=""
+                  style={{ transformOrigin: zoomOrigin }}
+                />
+              </div>
+            </div>
           )}
         </div>
         <div className="right">
