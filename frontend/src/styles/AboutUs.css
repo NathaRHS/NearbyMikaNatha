@@ -1,0 +1,462 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --page-padding: 2.5rem;
+  --header-height: 9.75rem;
+  --radius-lg: 1.75rem;
+  --radius-md: 1.4rem;
+  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.08);
+  --shadow-card: 0 20px 40px rgba(15, 23, 42, 0.08);
+  --control-height-lg: 5rem;
+  --input-width: 25rem;
+  --button-width: 15rem;
+}
+
+html {
+  width: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(179, 32, 11, 0.08), transparent 28%),
+    linear-gradient(180deg, #fcfcfb 0%, #f4f1eb 100%);
+  color: #111827;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+ul {
+  list-style: none;
+}
+
+.container {
+  width: 100%;
+  padding: calc(var(--header-height) + 28px) var(--page-padding) 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  min-height: var(--header-height);
+  padding: 18px var(--page-padding);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.84);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow:
+    0 8px 18px rgba(15, 23, 42, 0.05),
+    0 22px 44px rgba(15, 23, 42, 0.07);
+  backdrop-filter: blur(16px) saturate(150%);
+  height: var(--header-height);
+}
+
+header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -18px;
+  height: 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.12) 0%,
+    rgba(15, 23, 42, 0) 100%
+  );
+  filter: blur(14px);
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+header .logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+header .logo img {
+  object-fit: cover;
+}
+
+nav {
+  width: 100%;
+}
+
+nav ul {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(15px, 3vw, 56px);
+}
+
+nav ul a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  text-decoration: none;
+  color: rgb(0, 0, 29);
+  font-weight: 300;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+  transition: color 0.25s ease;
+}
+
+nav ul a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 8px;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+
+nav ul a:hover,
+nav ul a:focus-visible {
+  color: #7a4b1d;
+}
+
+nav ul a:hover::after,
+nav ul a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.AboutUs {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.aboutHero {
+  padding: clamp(2rem, 4vw, 4rem);
+  border-radius: 2.2rem;
+  background:
+    radial-gradient(circle at top left, rgba(183, 32, 11, 0.14), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(244, 237, 226, 0.98) 100%);
+  box-shadow: 0 30px 70px rgba(15, 23, 42, 0.08);
+}
+
+.aboutEyebrow {
+  margin-bottom: 0.9rem;
+  color: #8a4b08;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.aboutHero h1 {
+  max-width: 12ch;
+  margin-bottom: 1rem;
+  font-size: clamp(2.7rem, 6vw, 5rem);
+  line-height: 0.95;
+  color: #111827;
+}
+
+.aboutLead {
+  max-width: 36rem;
+  color: #5b6472;
+  font-size: 1.12rem;
+  line-height: 1.8;
+}
+
+.aboutGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.aboutCard {
+  padding: 1.8rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(17, 24, 39, 0.05);
+  box-shadow: var(--shadow-soft);
+}
+
+.aboutCardWide {
+  grid-column: 1 / -1;
+}
+
+.aboutCard h2,
+.aboutClosing h2 {
+  margin-bottom: 0.9rem;
+  color: #1f2937;
+  font-size: clamp(1.45rem, 2vw, 2rem);
+}
+
+.aboutCard p,
+.aboutClosing p {
+  color: #5b6472;
+  font-size: 1rem;
+  line-height: 1.85;
+}
+
+.aboutCard p + p {
+  margin-top: 1rem;
+}
+
+.aboutList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  margin-top: 1rem;
+}
+
+.aboutList li {
+  position: relative;
+  padding-left: 1.4rem;
+  color: #5b6472;
+  line-height: 1.8;
+}
+
+.aboutList li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.75rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #b3200b;
+}
+
+.aboutClosing {
+  padding: clamp(1.75rem, 4vw, 3rem);
+  border-radius: 2rem;
+  background: #111827;
+  color: #ffffff;
+  box-shadow: 0 24px 54px rgba(15, 23, 42, 0.16);
+}
+
+.aboutClosing h2,
+.aboutClosing p,
+.aboutSignature {
+  color: #ffffff;
+}
+
+.aboutClosing p + p {
+  margin-top: 1rem;
+}
+
+.aboutSignature {
+  opacity: 0.9;
+  font-weight: 600;
+}
+
+footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 50vh;
+  background-color: #111827;
+  color: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+footer .importantLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+footer .followus form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+footer .followus form input {
+  height: var(--control-height-lg);
+  width: var(--input-width);
+  max-width: 100%;
+  border-radius: 0.5rem;
+  border: none;
+  outline: none;
+  padding: 0 1rem;
+}
+
+footer .followus form button {
+  height: var(--control-height-lg);
+  width: var(--button-width);
+  max-width: 100%;
+  background-color: #b3200b;
+  color: #fff;
+  border-radius: 1rem;
+  border: none;
+  outline: none;
+  box-shadow: var(--shadow-card);
+}
+
+.FooterLeft {
+  display: flex;
+  gap: 1.5625rem;
+  flex-direction: column;
+}
+
+.footerNetwork {
+  display: flex;
+  align-items: center;
+  gap: 1.125rem;
+}
+
+.footerNetwork a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.375rem;
+  height: 2.375rem;
+  color: #ffffff;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.footerNetwork a:hover,
+.footerNetwork a:focus-visible {
+  color: #d7a35f;
+  transform: translateY(-3px);
+  opacity: 0.95;
+}
+
+.footerNetwork svg {
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+}
+
+@media (max-width: 900px) {
+  :root {
+    --header-height: 6.75rem;
+    --page-padding: 1.125rem;
+  }
+
+  .container {
+    gap: 56px;
+  }
+
+  header {
+    grid-template-columns: 92px 1fr;
+    font-size: 1.2rem;
+  }
+
+  nav ul {
+    gap: 18px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .aboutGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .aboutCardWide {
+    grid-column: auto;
+  }
+
+  footer {
+    height: auto;
+    padding: 28px 20px;
+    flex-wrap: wrap;
+    gap: 28px;
+  }
+
+  footer .followus form input {
+    width: min(100%, 22rem);
+  }
+
+  footer .followus form button {
+    width: min(100%, 14rem);
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --header-height: 10.75rem;
+    --page-padding: 0.875rem;
+  }
+
+  .container {
+    gap: 32px;
+    padding-top: calc(var(--header-height) + 20px);
+  }
+
+  header {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 12px;
+  }
+
+  nav ul {
+    justify-content: center;
+    gap: 12px 18px;
+  }
+
+  .aboutHero,
+  .aboutCard,
+  .aboutClosing {
+    padding: 1.25rem;
+  }
+
+  .aboutHero h1 {
+    max-width: none;
+    font-size: clamp(2.2rem, 11vw, 3.5rem);
+  }
+
+  footer {
+    height: auto;
+    padding: 32px 20px;
+    flex-direction: column;
+    gap: 24px;
+    text-align: center;
+  }
+
+  footer .followus form {
+    gap: 14px;
+  }
+
+  footer .followus form input,
+  footer .followus form button {
+    width: min(100%, 22rem);
+  }
+
+  .FooterLeft,
+  footer .importantLinks,
+  footer .followus {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footerNetwork {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}

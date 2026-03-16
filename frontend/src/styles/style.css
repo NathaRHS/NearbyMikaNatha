@@ -248,11 +248,11 @@ nav ul a:focus-visible::after {
 }
 
 .mainImages .bigImageRight {
-  background-image: url(images/bigImage2.avif);
+  background-image: url(/images/bigImage2.avif);
 }
 
 .mainImages .bigImageLeft {
-  background-image: url(images/bigImage1.avif);
+  background-image: url(/images/bigImage1.avif);
 }
 
 .mainImages .bigImageRight:hover,
@@ -691,4 +691,3 @@ footer .followus form button {
   height: 100%;
   fill: currentColor;
 }
-
