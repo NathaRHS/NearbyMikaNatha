@@ -1,44 +1,125 @@
+import { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { fetchProductDetails } from '../services/catalogApi'
 import '../styles/productDetail.css'
 
+function getProductIdFromPath() {
+  const segments = window.location.pathname.split('/').filter(Boolean)
+  const lastSegment = segments[segments.length - 1]
+
+  if (!lastSegment || lastSegment === 'product-detail') {
+    return null
+  }
+
+  const parsed = Number(lastSegment)
+  return Number.isNaN(parsed) ? null : parsed
+}
+
+function formatPrice(value) {
+  const numericValue = Number(value)
+
+  if (Number.isNaN(numericValue)) {
+    return ''
+  }
+
+  return `$${numericValue.toFixed(2)}`
+}
+
 function ProductDetailPage() {
+  const [quantity, setQuantity] = useState(1)
+  const [product, setProduct] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    let isMounted = true
+    const productId = getProductIdFromPath()
+
+    async function loadProduct() {
+      if (!productId) {
+        setProduct({
+          nom: 'Classic Summer Straw Hat - Natural Beige',
+          description: '',
+          prix: 29.99,
+          imageUrl: '/images/prod.avif',
+        })
+        setIsLoading(false)
+        return
+      }
+
+      try {
+        const data = await fetchProductDetails(productId)
+
+        if (isMounted && data) {
+          setProduct(data)
+        }
+      } catch {
+        if (isMounted) {
+          setProduct({
+            nom: 'Classic Summer Straw Hat - Natural Beige',
+            description: '',
+            prix: 29.99,
+            imageUrl: '/images/prod.avif',
+          })
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    void loadProduct()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   return (
     <div className="container">
       <Header />
       <section className="productDetail">
         <div className="left">
-          <img src="/images/prod.avif" alt="" />
+          {isLoading || !product ? (
+            <div className="productDetailImagePlaceholder" aria-hidden="true"></div>
+          ) : (
+            <img src={product.imageUrl} alt="" />
+          )}
         </div>
         <div className="right">
-          <h1 className="productName">Classic Summer Straw Hat â€“ Natural Beige</h1>
+          <h1 className="productName">{product?.nom ?? ''}</h1>
           <h3 className="quality">Effortless elegance for sunny days</h3>
           <div className="prices">
             <p className="DetailOldPrice"></p>
-            <p className="DetailNewPrice"></p>
+            <p className="DetailNewPrice">{formatPrice(product?.prix)}</p>
           </div>
           <div className="quantity-box">
-            <button className="quantity-btn" id="minus">-</button>
-            <div className="quantity-value" id="value">1</div>
-            <button className="quantity-btn" id="plus">+</button>
+            <button
+              className="quantity-btn"
+              id="minus"
+              onClick={() => setQuantity((value) => Math.max(1, value - 1))}
+            >
+              -
+            </button>
+            <div className="quantity-value" id="value">{quantity}</div>
+            <button
+              className="quantity-btn"
+              id="plus"
+              onClick={() => setQuantity((value) => value + 1)}
+            >
+              +
+            </button>
           </div>
           <button className="addToBag">Add to bag</button>
           <section className="product-description">
-            <p className="product-summary">
-              Bring a touch of effortless elegance to your summer look with this classic straw hat in natural beige.
-              Lightweight and breathable, it ensures comfort while offering reliable sun protection. Its minimalist
-              design makes it versatileâ€”perfect for beach outings, vacations, or simply strolling through the city
-              with style.
-            </p>
+            <p className="product-summary">{product?.description || ''}</p>
 
             <h3 className="product-details-title">Details</h3>
 
             <ul className="product-details-list">
-              <li><strong>Material:</strong> Woven straw</li>
-              <li><strong>Color:</strong> Natural Beige</li>
-              <li>Minimalist, versatile design</li>
-              <li>Lightweight &amp; breathable</li>
-              <li>Perfect for everyday summer wear</li>
+              <li><strong>Product:</strong> {product?.nom || '-'}</li>
+              <li><strong>Price:</strong> {formatPrice(product?.prix) || '-'}</li>
             </ul>
           </section>
         </div>

@@ -1,6 +1,8 @@
+import { RouterLink } from '../router'
+
 function Footer() {
   return (
-    <footer>
+    <footer id="footer">
       <aside className="FooterLeft">
         <div className="footerText">
           <h1>Shop</h1>
@@ -35,10 +37,10 @@ function Footer() {
       </aside>
 
       <section className="importantLinks">
-        <a className="lienFooter" href="AboutUs.html">About us </a>
-        <a className="lienFooter" href="LegalNotice.html">Legal notice</a>
-        <a className="lienFooter" href="conditionsGenerales..html">Terms of service</a>
-        <a className="lienFooter" href="PrivacyPolicy.html">Privacy policy</a>
+        <RouterLink className="lienFooter" to="/about-us">About us </RouterLink>
+        <RouterLink className="lienFooter" to="/legal-notice">Legal notice</RouterLink>
+        <RouterLink className="lienFooter" to="/terms">Terms of service</RouterLink>
+        <RouterLink className="lienFooter" to="/privacy-policy">Privacy policy</RouterLink>
       </section>
 
       <aside className="followus">

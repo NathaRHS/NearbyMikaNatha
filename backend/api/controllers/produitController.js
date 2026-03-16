@@ -1,7 +1,6 @@
 const ProduitService = require('../services/produitService');
 
 const ProduitController = {
-    // GET /api/produits
     getAll: async (req, res) => {
         try {
             const produits = await ProduitService.getAll();
@@ -11,7 +10,6 @@ const ProduitController = {
         }
     },
 
-    // GET /api/produits/:id
     getById: async (req, res) => {
         try {
             const produit = await ProduitService.getById(req.params.id);
@@ -22,11 +20,10 @@ const ProduitController = {
         }
     },
 
-    // POST /api/produits
     create: async (req, res) => {
         try {
-            const { nom } = req.body;
-            const produit = await ProduitService.create(nom);
+            const { nom, description, prix } = req.body;
+            const produit = await ProduitService.create(nom, description, prix);
             res.status(201).json(produit);
         } catch (error) {
             const status = error.status || 500;
@@ -34,11 +31,10 @@ const ProduitController = {
         }
     },
 
-    // PUT /api/produits/:id
     update: async (req, res) => {
         try {
-            const { nom } = req.body;
-            const produit = await ProduitService.update(req.params.id, nom);
+            const { nom, description, prix } = req.body;
+            const produit = await ProduitService.update(req.params.id, nom, description, prix);
             res.json(produit);
         } catch (error) {
             const status = error.status || 500;
@@ -46,11 +42,10 @@ const ProduitController = {
         }
     },
 
-    // DELETE /api/produits/:id
     delete: async (req, res) => {
         try {
             const produit = await ProduitService.delete(req.params.id);
-            res.json({ message: 'Produit supprimé', produit });
+            res.json({ message: 'Produit supprime', produit });
         } catch (error) {
             const status = error.status || 500;
             res.status(status).json({ message: error.message || 'Erreur serveur' });

@@ -1,11 +1,65 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
+import { RouterLink } from '../router'
+import { fetchCatalogProducts } from '../services/catalogApi'
 import { initializeScrollReveal } from '../scroll'
 import '../styles/style.css'
 
+const fallbackProducts = [
+  { id: 1, nom: 'Wide-Brim Straw Hat with Leather Band - Natural Beige', description: '', prix: 29.99, imageUrl: '/images/prod.avif' },
+  { id: 2, nom: 'Wide-Brim Straw Hat with Leather Band - Natural Beige', description: '', prix: 29.99, imageUrl: '/images/pd2.avif' },
+  { id: 3, nom: 'Wide-Brim Straw Hat with Leather Band - Natural Beige', description: '', prix: 29.99, imageUrl: '/images/pd3.avif' },
+  { id: 4, nom: 'Wide-Brim Straw Hat with Leather Band - Natural Beige', description: '', prix: 29.99, imageUrl: '/images/pd4.avif' },
+  { id: 5, nom: 'Wide-Brim Straw Hat with Leather Band - Natural Beige', description: '', prix: 29.99, imageUrl: '/images/pd5.avif' },
+  { id: 6, nom: 'Wide-Brim Straw Hat with Leather Band - Natural Beige', description: '', prix: 29.99, imageUrl: '/images/pd6.avif' },
+  { id: 7, nom: 'Wide-Brim Straw Hat with Leather Band - Natural Beige', description: '', prix: 29.99, imageUrl: '/images/pd7.avif' },
+  { id: 8, nom: 'Wide-Brim Straw Hat with Leather Band - Natural Beige', description: '', prix: 29.99, imageUrl: '/images/imageTest.jpeg' },
+]
+
+function formatPrice(value) {
+  const numericValue = Number(value)
+
+  if (Number.isNaN(numericValue)) {
+    return ''
+  }
+
+  return `$${numericValue.toFixed(2)}`
+}
+
 function HomePage() {
+  const [products, setProducts] = useState([])
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true)
+
   useEffect(() => initializeScrollReveal(), [])
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadProducts() {
+      try {
+        const data = await fetchCatalogProducts()
+
+        if (isMounted) {
+          setProducts(data.length > 0 ? data : fallbackProducts)
+        }
+      } catch {
+        if (isMounted) {
+          setProducts(fallbackProducts)
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingProducts(false)
+        }
+      }
+    }
+
+    void loadProducts()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   return (
     <div className="container">
@@ -46,87 +100,33 @@ function HomePage() {
       </section>
 
       <section className="productsGrid">
-        <div className="product">
-          <a href="ProductDetail.html"><img src="/images/prod.avif" alt="" width="300" /></a>
-          <div className="productInformation">
-            <h2>Wide-Brim Straw Hat with Leather Band - Natural Beige</h2>
-            <div className="prices">
-              <p className="oldPrice">$49.99</p>
-              <p className="newPrice">$29.99</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="product">
-          <img src="/images/pd2.avif" alt="" width="300" />
-          <div className="productInformation">
-            <h2>Wide-Brim Straw Hat with Leather Band - Natural Beige</h2>
-            <div className="prices">
-              <p className="oldPrice">$49.99</p>
-              <p className="newPrice">$29.99</p>
-            </div>
-          </div>
-        </div>
-        <div className="product">
-          <img src="/images/pd3.avif" alt="" width="300" />
-          <div className="productInformation">
-            <h2>Wide-Brim Straw Hat with Leather Band - Natural Beige</h2>
-            <div className="prices">
-              <p className="oldPrice">$49.99</p>
-              <p className="newPrice">$29.99</p>
-            </div>
-          </div>
-        </div>
-        <div className="product">
-          <img src="/images/pd4.avif" alt="" width="300" />
-          <div className="productInformation">
-            <h2>Wide-Brim Straw Hat with Leather Band - Natural Beige</h2>
-            <div className="prices">
-              <p className="oldPrice">$49.99</p>
-              <p className="newPrice">$29.99</p>
-            </div>
-          </div>
-        </div>
-        <div className="product">
-          <img src="/images/pd5.avif" alt="" width="300" />
-          <div className="productInformation">
-            <h2>Wide-Brim Straw Hat with Leather Band - Natural Beige</h2>
-            <div className="prices">
-              <p className="oldPrice">$49.99</p>
-              <p className="newPrice">$29.99</p>
-            </div>
-          </div>
-        </div>
-        <div className="product">
-          <img src="/images/pd6.avif" alt="" width="300" />
-          <div className="productInformation">
-            <h2>Wide-Brim Straw Hat with Leather Band - Natural Beige</h2>
-            <div className="prices">
-              <p className="oldPrice">$49.99</p>
-              <p className="newPrice">$29.99</p>
-            </div>
-          </div>
-        </div>
-        <div className="product">
-          <img src="/images/pd7.avif" alt="" width="300" />
-          <div className="productInformation">
-            <h2>Wide-Brim Straw Hat with Leather Band - Natural Beige</h2>
-            <div className="prices">
-              <p className="oldPrice">$49.99</p>
-              <p className="newPrice">$29.99</p>
-            </div>
-          </div>
-        </div>
-        <div className="product">
-          <img src="/images/imageTest.jpeg" alt="" width="300" />
-          <div className="productInformation">
-            <h2>Wide-Brim Straw Hat with Leather Band - Natural Beige</h2>
-            <div className="prices">
-              <p className="oldPrice">$49.99</p>
-              <p className="newPrice">$29.99</p>
-            </div>
-          </div>
-        </div>
+        {isLoadingProducts
+          ? Array.from({ length: 8 }).map((_, index) => (
+              <div className="product" key={`placeholder-${index}`}>
+                <div className="productImagePlaceholder" aria-hidden="true"></div>
+                <div className="productInformation">
+                  <h2>&nbsp;</h2>
+                  <div className="prices">
+                    <p className="oldPrice">&nbsp;</p>
+                    <p className="newPrice">&nbsp;</p>
+                  </div>
+                </div>
+              </div>
+            ))
+          : products.map((product) => (
+              <div className="product" key={product.id}>
+                <RouterLink to={`/product-detail/${product.id}`}>
+                  <img src={product.imageUrl} alt="" width="300" />
+                </RouterLink>
+                <div className="productInformation">
+                  <h2>{product.nom}</h2>
+                  <div className="prices">
+                    <p className="oldPrice"></p>
+                    <p className="newPrice">{formatPrice(product.prix)}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
       </section>
 
       <Footer />

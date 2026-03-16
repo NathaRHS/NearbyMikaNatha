@@ -142,6 +142,14 @@ nav ul a:focus-visible::after {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
 }
+
+.container .productDetail .productDetailImagePlaceholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  box-shadow: var(--shadow-card);
+}
 .container .productDetail .right {
   display: flex;
   flex-direction: column;

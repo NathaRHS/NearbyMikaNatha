@@ -1,7 +1,7 @@
 -- iraisana
 CREATE TABLE produit (
     id SERIAL PRIMARY KEY,
-    nom VARCHAR(255)
+    nom VARCHAR(255)    
 );
 -- couleur
 CREATE TABLE couleur (
@@ -50,3 +50,7 @@ CREATE TABLE commandeinfo (
     adresse VARCHAR(255),
     reference VARCHAR(255)
 );
+
+
+ALTER TABLE produit add description VARCHAR(255);
+ALTER TABLE produit add prix DECIMAL(10, 2);

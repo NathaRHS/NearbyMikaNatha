@@ -1,11 +1,13 @@
 const express = require('express');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 const produitRoutes = require('./routes/produitRoutes');
@@ -15,6 +17,7 @@ const typeMancheRoutes = require('./routes/typeMancheRoutes');
 const produitLiquetteRoutes = require('./routes/produitLiquetteRoutes');
 const imageRoutes = require('./routes/imageRoutes');
 const commandeInfoRoutes = require('./routes/commandeInfoRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
 
 app.use('/api/produits', produitRoutes);
 app.use('/api/couleurs', couleurRoutes);
@@ -23,6 +26,7 @@ app.use('/api/type-manches', typeMancheRoutes);
 app.use('/api/produit-liquettes', produitLiquetteRoutes);
 app.use('/api/images', imageRoutes);
 app.use('/api/commande-infos', commandeInfoRoutes);
+app.use('/api/uploads', uploadRoutes);
 
 // Démarrage du serveur
 app.listen(PORT, () => {

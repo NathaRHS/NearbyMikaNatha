@@ -432,6 +432,12 @@ body.js-ready .productsGrid .product.scroll-reveal.is-visible:hover {
   background: var(--surface-muted);
 }
 
+.productImagePlaceholder {
+  width: 100%;
+  aspect-ratio: 4 / 4.5;
+  background: var(--surface-muted);
+}
+
 .productInformation {
   display: flex;
   flex-direction: column;
