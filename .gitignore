@@ -1,5 +1,40 @@
+# Dependencies
 node_modules/
+
+# Environment and secrets
 .env
-.DS_Store
+.env.*
+!.env.example
+!.env*.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
 dist/
 build/
+coverage/
+.vite/
+
+# Runtime files
+*.pid
+*.pid.lock
+*.seed
+
+# Caches
+.cache/
+.eslintcache
+
+# OS / editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln

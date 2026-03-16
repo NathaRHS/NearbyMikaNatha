@@ -9,6 +9,15 @@ if (!prefersReducedMotion.matches) {
       classes: ["scroll-reveal"],
     },
     {
+      selector: ".questions > #title",
+      classes: ["scroll-reveal", "reveal-up"],
+    },
+    {
+      selector: ".questions .question",
+      classes: ["scroll-reveal", "reveal-up"],
+      stagger: true,
+    },
+    {
       selector: ".bigImageRight",
       classes: ["scroll-reveal", "reveal-left"],
     },

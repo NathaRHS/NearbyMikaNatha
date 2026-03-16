@@ -248,11 +248,11 @@ nav ul a:focus-visible::after {
 }
 
 .mainImages .bigImageRight {
-  background-image: url(images/bigImage2.avif);
+  background-image: url(/images/bigImage2.avif);
 }
 
 .mainImages .bigImageLeft {
-  background-image: url(images/bigImage1.avif);
+  background-image: url(/images/bigImage1.avif);
 }
 
 .mainImages .bigImageRight:hover,
@@ -429,6 +429,12 @@ body.js-ready .productsGrid .product.scroll-reveal.is-visible:hover {
   width: 100%;
   aspect-ratio: 4 / 4.5;
   object-fit: cover;
+  background: var(--surface-muted);
+}
+
+.productImagePlaceholder {
+  width: 100%;
+  aspect-ratio: 4 / 4.5;
   background: var(--surface-muted);
 }
 
@@ -691,4 +697,3 @@ footer .followus form button {
   height: 100%;
   fill: currentColor;
 }
-
