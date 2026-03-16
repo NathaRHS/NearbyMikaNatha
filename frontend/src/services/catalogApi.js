@@ -33,6 +33,15 @@ function buildProductImageMap(images) {
   }, new Map())
 }
 
+function getProductImages(images, productId) {
+  return (Array.isArray(images) ? images : [])
+    .filter((image) => {
+      const currentProductId = image.produit?.id ?? image.idproduit
+      return Number(currentProductId) === Number(productId)
+    })
+    .map((image) => image.url)
+}
+
 function normalizeProduct(product, imageMap) {
   return {
     id: product.id,
@@ -71,6 +80,10 @@ export async function fetchProductDetails(productId) {
   }
 
   const imageMap = buildProductImageMap(Array.isArray(images) ? images : [])
+  const productImages = getProductImages(images, product.id)
 
-  return normalizeProduct(product, imageMap)
+  return {
+    ...normalizeProduct(product, imageMap),
+    images: productImages.length > 0 ? productImages : [imageMap.get(product.id) || '/images/prod.avif'],
+  }
 }
