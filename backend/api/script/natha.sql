@@ -1,7 +1,9 @@
 -- iraisana
 CREATE TABLE produit (
     id SERIAL PRIMARY KEY,
-    nom VARCHAR(255)    
+    nom VARCHAR(255),
+    iddescription_image INT,
+    FOREIGN KEY (iddescription_image) REFERENCES description_image(id)
 );
 -- couleur
 CREATE TABLE couleur (
@@ -54,3 +56,10 @@ CREATE TABLE commandeinfo (
 
 ALTER TABLE produit add description VARCHAR(255);
 ALTER TABLE produit add prix DECIMAL(10, 2);
+
+CREATE TABLE description_image(
+    id SERIAL PRIMARY KEY,
+    url VARCHAR(255)
+);
+ALTER TABLE produit add iddescription_image INT;
+ALTER TABLE produit add FOREIGN KEY (iddescription_image) REFERENCES description_image(id);
