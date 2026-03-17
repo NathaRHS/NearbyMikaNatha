@@ -2,8 +2,6 @@
 CREATE TABLE produit (
     id SERIAL PRIMARY KEY,
     nom VARCHAR(255),
-    iddescription_image INT,
-    FOREIGN KEY (iddescription_image) REFERENCES description_image(id)
 );
 -- couleur
 CREATE TABLE couleur (

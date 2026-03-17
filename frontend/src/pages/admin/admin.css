@@ -14,6 +14,19 @@
   margin-bottom: 24px;
 }
 
+.adminHeroActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.adminSessionInfo {
+  margin: 0;
+  color: #516077;
+}
+
 .adminEyebrow {
   margin: 0 0 8px;
   font-size: 0.9rem;
@@ -55,6 +68,24 @@
   display: grid;
   grid-template-columns: 260px 1fr;
   gap: 24px;
+}
+
+.adminLoginShell {
+  display: grid;
+  place-items: center;
+}
+
+.adminLoginCard {
+  width: min(100%, 36rem);
+  background: #ffffff;
+  border: 1px solid #e0e5ee;
+  border-radius: 24px;
+  box-shadow: 0 18px 36px rgba(20, 32, 51, 0.08);
+  padding: 24px;
+}
+
+.adminLoginForm {
+  grid-template-columns: 1fr;
 }
 
 .adminSidebar,

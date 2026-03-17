@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { RouterLink } from '../../router'
+import { RouterLink, navigateTo } from '../../router'
 import { adminResources, getInitialFormValues } from './resources'
+import { getCurrentAdmin, logoutAdmin } from '../../services/adminAuthApi'
 import './admin.css'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
@@ -34,6 +35,8 @@ function AdminPage() {
   const [galleryProductId, setGalleryProductId] = useState('')
   const [galleryFiles, setGalleryFiles] = useState([])
   const [galleryPreviewUrls, setGalleryPreviewUrls] = useState([])
+  const [currentAdmin, setCurrentAdmin] = useState(null)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isQuickSaving, setIsQuickSaving] = useState(false)
@@ -75,15 +78,61 @@ function AdminPage() {
   }, [galleryPreviewUrls, imagePreviewUrl, quickImagePreviewUrl])
 
   useEffect(() => {
-    void loadLookups()
+    let isMounted = true
+
+    async function checkSession() {
+      try {
+        const response = await getCurrentAdmin()
+
+        if (!isMounted) {
+          return
+        }
+
+        setCurrentAdmin(response?.adminUser ?? null)
+      } catch (error) {
+        if (!isMounted) {
+          return
+        }
+
+        if (error.status === 401) {
+          navigateTo('/admin/login')
+          return
+        }
+
+        setErrorMessage(error.message)
+      } finally {
+        if (isMounted) {
+          setIsCheckingAuth(false)
+        }
+      }
+    }
+
+    void checkSession()
+
+    return () => {
+      isMounted = false
+    }
   }, [])
 
   useEffect(() => {
+    if (!currentAdmin) {
+      return
+    }
+
+    void loadLookups()
+  }, [currentAdmin])
+
+  useEffect(() => {
+    if (!currentAdmin) {
+      return
+    }
+
     void loadRecords(resource)
-  }, [resource])
+  }, [currentAdmin, resource])
 
   async function request(path, options = {}) {
     const response = await fetch(`${API_BASE_URL}${path}`, {
+      credentials: 'same-origin',
       headers: {
         'Content-Type': 'application/json',
         ...(options.headers ?? {}),
@@ -104,10 +153,21 @@ function AdminPage() {
 
     if (!response.ok) {
       const message = data?.message || 'Erreur API'
-      throw new Error(message)
+      const error = new Error(message)
+      error.status = response.status
+      throw error
     }
 
     return data
+  }
+
+  function handleApiError(error) {
+    if (error.status === 401) {
+      navigateTo('/admin/login')
+      return
+    }
+
+    setErrorMessage(error.message)
   }
 
   async function loadLookups() {
@@ -121,7 +181,7 @@ function AdminPage() {
 
       setLookups({ produits, couleurs, images, typeManches })
     } catch (error) {
-      setErrorMessage(error.message)
+      handleApiError(error)
     }
   }
 
@@ -134,7 +194,7 @@ function AdminPage() {
       setRecords(Array.isArray(data) ? data : [])
     } catch (error) {
       setRecords([])
-      setErrorMessage(error.message)
+      handleApiError(error)
     } finally {
       setIsLoading(false)
     }
@@ -330,7 +390,7 @@ function AdminPage() {
       resetForm()
       setStatusMessage(isEditing ? 'Mise a jour effectuee.' : 'Creation effectuee.')
     } catch (error) {
-      setErrorMessage(error.message)
+      handleApiError(error)
     } finally {
       setIsSaving(false)
     }
@@ -382,7 +442,7 @@ function AdminPage() {
       resetQuickForm()
       setStatusMessage('Produit cree avec sa declinaison en une seule etape.')
     } catch (error) {
-      setErrorMessage(error.message)
+      handleApiError(error)
     } finally {
       setIsQuickSaving(false)
     }
@@ -400,7 +460,7 @@ function AdminPage() {
       resetGalleryForm()
       setStatusMessage('Images supplementaires ajoutees au produit.')
     } catch (error) {
-      setErrorMessage(error.message)
+      handleApiError(error)
     } finally {
       setIsGallerySaving(false)
     }
@@ -430,9 +490,17 @@ function AdminPage() {
       }
       setStatusMessage('Suppression effectuee.')
     } catch (error) {
-      setErrorMessage(error.message)
+      handleApiError(error)
     } finally {
       setDeletingId(null)
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await logoutAdmin()
+    } finally {
+      navigateTo('/admin/login')
     }
   }
 
@@ -496,12 +564,24 @@ function AdminPage() {
             `commande-infos`.
           </p>
         </div>
-        <RouterLink className="adminBackLink" to="/">
-          Retour au site
-        </RouterLink>
+        <div className="adminHeroActions">
+          {currentAdmin ? (
+            <p className="adminSessionInfo">
+              Connecte: <strong>{currentAdmin.email}</strong>
+            </p>
+          ) : null}
+          <RouterLink className="adminBackLink" to="/">
+            Retour au site
+          </RouterLink>
+          <button className="secondary" type="button" onClick={handleLogout}>
+            Deconnexion
+          </button>
+        </div>
       </section>
 
-      <section className="adminLayout">
+      {isCheckingAuth ? <p className="adminEmpty">Verification session admin...</p> : null}
+
+      {!isCheckingAuth && currentAdmin ? <section className="adminLayout">
         <aside className="adminSidebar">
           <h2>Ressources</h2>
           <div className="adminNav">
@@ -849,7 +929,7 @@ function AdminPage() {
             )}
           </div>
         </section>
-      </section>
+      </section> : null}
     </main>
   )
 }

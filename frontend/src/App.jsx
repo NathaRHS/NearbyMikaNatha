@@ -6,6 +6,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import ProductDetailPage from './pages/ProductDetailPage'
 import TermsPage from './pages/TermsPage'
 import AdminPage from './pages/admin/AdminPage'
+import AdminLoginPage from './pages/admin/AdminLoginPage'
 import { usePathname } from './router'
 
 const routes = {
@@ -17,6 +18,7 @@ const routes = {
   '/product-detail': ProductDetailPage,
   '/terms': TermsPage,
   '/admin': AdminPage,
+  '/admin/login': AdminLoginPage,
 }
 
 function App() {
