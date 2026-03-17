@@ -23,15 +23,20 @@ function AdminPage() {
     produits: [],
     couleurs: [],
     images: [],
+    descriptionImages: [],
     typeManches: [],
   })
   const [formData, setFormData] = useState(getInitialFormValues(adminResources[0]))
   const [editingRecord, setEditingRecord] = useState(null)
   const [productImageFile, setProductImageFile] = useState(null)
   const [imagePreviewUrl, setImagePreviewUrl] = useState('')
+  const [productDescriptionImageFile, setProductDescriptionImageFile] = useState(null)
+  const [descriptionImagePreviewUrl, setDescriptionImagePreviewUrl] = useState('')
   const [quickForm, setQuickForm] = useState(initialQuickForm)
   const [quickImageFile, setQuickImageFile] = useState(null)
   const [quickImagePreviewUrl, setQuickImagePreviewUrl] = useState('')
+  const [quickDescriptionImageFile, setQuickDescriptionImageFile] = useState(null)
+  const [quickDescriptionImagePreviewUrl, setQuickDescriptionImagePreviewUrl] = useState('')
   const [galleryProductId, setGalleryProductId] = useState('')
   const [galleryFiles, setGalleryFiles] = useState([])
   const [galleryPreviewUrls, setGalleryPreviewUrls] = useState([])
@@ -55,6 +60,8 @@ function AdminPage() {
     setEditingRecord(null)
     setProductImageFile(null)
     setImagePreviewUrl('')
+    setProductDescriptionImageFile(null)
+    setDescriptionImagePreviewUrl('')
     setStatusMessage('')
     setErrorMessage('')
   }, [resource])
@@ -69,13 +76,27 @@ function AdminPage() {
         URL.revokeObjectURL(quickImagePreviewUrl)
       }
 
+      if (descriptionImagePreviewUrl && descriptionImagePreviewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(descriptionImagePreviewUrl)
+      }
+
+      if (quickDescriptionImagePreviewUrl && quickDescriptionImagePreviewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(quickDescriptionImagePreviewUrl)
+      }
+
       galleryPreviewUrls.forEach((previewUrl) => {
         if (previewUrl.startsWith('blob:')) {
           URL.revokeObjectURL(previewUrl)
         }
       })
     }
-  }, [galleryPreviewUrls, imagePreviewUrl, quickImagePreviewUrl])
+  }, [
+    descriptionImagePreviewUrl,
+    galleryPreviewUrls,
+    imagePreviewUrl,
+    quickDescriptionImagePreviewUrl,
+    quickImagePreviewUrl,
+  ])
 
   useEffect(() => {
     let isMounted = true
@@ -172,14 +193,15 @@ function AdminPage() {
 
   async function loadLookups() {
     try {
-      const [produits, couleurs, images, typeManches] = await Promise.all([
+      const [produits, couleurs, images, descriptionImages, typeManches] = await Promise.all([
         request('/api/produits'),
         request('/api/couleurs'),
         request('/api/images'),
+        request('/api/description-images'),
         request('/api/type-manches'),
       ])
 
-      setLookups({ produits, couleurs, images, typeManches })
+      setLookups({ produits, couleurs, images, descriptionImages, typeManches })
     } catch (error) {
       handleApiError(error)
     }
@@ -210,6 +232,22 @@ function AdminPage() {
   function startEdit(record) {
     setEditingRecord(record)
     setFormData(getInitialFormValues(resource, record))
+    setProductImageFile(null)
+    setProductDescriptionImageFile(null)
+
+    if (resource.key === 'produits') {
+      const existingImage = lookups.images.find((image) => {
+        const currentProductId = image.produit?.id ?? image.idproduit
+        return Number(currentProductId) === Number(record.id)
+      })
+
+      setImagePreviewUrl(existingImage?.url ?? '')
+      setDescriptionImagePreviewUrl(record.description_image?.url ?? '')
+    } else {
+      setImagePreviewUrl('')
+      setDescriptionImagePreviewUrl('')
+    }
+
     setStatusMessage('')
     setErrorMessage('')
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
@@ -220,12 +258,16 @@ function AdminPage() {
     setFormData(getInitialFormValues(resource))
     setProductImageFile(null)
     setImagePreviewUrl('')
+    setProductDescriptionImageFile(null)
+    setDescriptionImagePreviewUrl('')
   }
 
   function resetQuickForm() {
     setQuickForm(initialQuickForm)
     setQuickImageFile(null)
     setQuickImagePreviewUrl('')
+    setQuickDescriptionImageFile(null)
+    setQuickDescriptionImagePreviewUrl('')
   }
 
   function resetGalleryForm() {
@@ -265,6 +307,32 @@ function AdminPage() {
 
     const objectUrl = URL.createObjectURL(file)
     setQuickImagePreviewUrl(objectUrl)
+  }
+
+  function handleDescriptionImageSelection(event) {
+    const file = event.target.files?.[0] ?? null
+    setProductDescriptionImageFile(file)
+
+    if (!file) {
+      setDescriptionImagePreviewUrl(editingRecord?.description_image?.url ?? '')
+      return
+    }
+
+    const objectUrl = URL.createObjectURL(file)
+    setDescriptionImagePreviewUrl(objectUrl)
+  }
+
+  function handleQuickDescriptionImageSelection(event) {
+    const file = event.target.files?.[0] ?? null
+    setQuickDescriptionImageFile(file)
+
+    if (!file) {
+      setQuickDescriptionImagePreviewUrl('')
+      return
+    }
+
+    const objectUrl = URL.createObjectURL(file)
+    setQuickDescriptionImagePreviewUrl(objectUrl)
   }
 
   function handleGalleryImageSelection(event) {
@@ -350,6 +418,44 @@ function AdminPage() {
     }
   }
 
+  async function saveProductDescriptionImage(productId, file) {
+    if (!file) {
+      return
+    }
+
+    const content = await fileToDataUrl(file)
+    const uploadedFile = await request('/api/uploads', {
+      method: 'POST',
+      body: JSON.stringify({
+        filename: file.name,
+        content,
+      }),
+    })
+
+    const existingImage = lookups.descriptionImages.find((image) => {
+      const currentProductId = image.produit?.id
+      return Number(currentProductId) === Number(productId)
+    })
+
+    const payload = {
+      produitId: Number(productId),
+      url: uploadedFile.url,
+    }
+
+    if (existingImage) {
+      await request(`/api/description-images/${existingImage.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(payload),
+      })
+      return
+    }
+
+    await request('/api/description-images', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+  }
+
   function buildPayload() {
     return resource.fields.reduce((accumulator, field) => {
       const value = formData[field.name]
@@ -383,6 +489,10 @@ function AdminPage() {
 
       if (resource.key === 'produits' && savedRecord?.id && productImageFile) {
         await saveProductImage(savedRecord.id, productImageFile)
+      }
+
+      if (resource.key === 'produits' && savedRecord?.id && productDescriptionImageFile) {
+        await saveProductDescriptionImage(savedRecord.id, productDescriptionImageFile)
       }
 
       await loadRecords(resource)
@@ -435,6 +545,10 @@ function AdminPage() {
 
       if (quickImageFile) {
         await saveProductImage(produit.id, quickImageFile)
+      }
+
+      if (quickDescriptionImageFile) {
+        await saveProductDescriptionImage(produit.id, quickDescriptionImageFile)
       }
 
       await loadLookups()
@@ -560,8 +674,8 @@ function AdminPage() {
           <h1>CRUD backend</h1>
           <p className="adminLead">
             Interface React pour piloter les endpoints `produits`, `couleurs`,
-            `type-manches`, `produit-shoes`, `produit-liquettes`, `images` et
-            `commande-infos`.
+            `type-manches`, `produit-shoes`, `produit-liquettes`, `images`,
+            `description-images` et `commande-infos`.
           </p>
         </div>
         <div className="adminHeroActions">
@@ -723,10 +837,27 @@ function AdminPage() {
                 />
               </label>
 
+              <label htmlFor="quick-description-image">
+                <span>Image detail produit</span>
+                <input
+                  id="quick-description-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleQuickDescriptionImageSelection}
+                />
+              </label>
+
               {quickImagePreviewUrl ? (
                 <div className="adminImagePreview">
                   <span>Apercu</span>
                   <img src={quickImagePreviewUrl} alt="" />
+                </div>
+              ) : null}
+
+              {quickDescriptionImagePreviewUrl ? (
+                <div className="adminImagePreview">
+                  <span>Apercu image detail</span>
+                  <img src={quickDescriptionImagePreviewUrl} alt="" />
                 </div>
               ) : null}
 
@@ -838,21 +969,40 @@ function AdminPage() {
               ))}
 
               {resource.key === 'produits' ? (
-                <label htmlFor="product-image">
-                  <span>Image du produit</span>
-                  <input
-                    id="product-image"
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageSelection}
-                  />
-                </label>
+                <>
+                  <label htmlFor="product-image">
+                    <span>Image du produit</span>
+                    <input
+                      id="product-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageSelection}
+                    />
+                  </label>
+
+                  <label htmlFor="product-description-image">
+                    <span>Image detail produit</span>
+                    <input
+                      id="product-description-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleDescriptionImageSelection}
+                    />
+                  </label>
+                </>
               ) : null}
 
               {resource.key === 'produits' && imagePreviewUrl ? (
                 <div className="adminImagePreview">
                   <span>Apercu</span>
                   <img src={imagePreviewUrl} alt="" />
+                </div>
+              ) : null}
+
+              {resource.key === 'produits' && descriptionImagePreviewUrl ? (
+                <div className="adminImagePreview">
+                  <span>Apercu image detail</span>
+                  <img src={descriptionImagePreviewUrl} alt="" />
                 </div>
               ) : null}
 

@@ -337,6 +337,23 @@ nav ul a:focus-visible::after {
   line-height: 1.8;
 }
 
+.productDescriptionVisual {
+  width: min(100%, 42rem);
+  padding: 0.85rem;
+  border-radius: 1.5rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: var(--shadow-card);
+}
+
+.productDescriptionVisual img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 1rem;
+  box-shadow: none;
+}
+
 .product-details-title {
   font-size: 1.15rem;
   font-weight: 700;

@@ -12,6 +12,11 @@ export const adminResources = [
       { key: 'id', label: 'ID' },
       { key: 'nom', label: 'Nom' },
       { key: 'prix', label: 'Prix' },
+      {
+        key: 'description_image',
+        label: 'Image detail',
+        render: (record) => (record.description_image?.url ? 'Oui' : '-'),
+      },
     ],
   },
   {

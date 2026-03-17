@@ -19,6 +19,7 @@ const produitShoesRoutes = require('./routes/produitShoesRoutes');
 const typeMancheRoutes = require('./routes/typeMancheRoutes');
 const produitLiquetteRoutes = require('./routes/produitLiquetteRoutes');
 const imageRoutes = require('./routes/imageRoutes');
+const descriptionImageRoutes = require('./routes/descriptionImageRoutes');
 const commandeInfoRoutes = require('./routes/commandeInfoRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 
@@ -29,6 +30,7 @@ app.use('/api/produit-shoes', produitShoesRoutes);
 app.use('/api/type-manches', typeMancheRoutes);
 app.use('/api/produit-liquettes', produitLiquetteRoutes);
 app.use('/api/images', imageRoutes);
+app.use('/api/description-images', descriptionImageRoutes);
 app.use('/api/commande-infos', commandeInfoRoutes);
 app.use('/api/uploads', uploadRoutes);
 

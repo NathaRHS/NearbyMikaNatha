@@ -54,6 +54,7 @@ function ProductDetailPage() {
           prix: 29.99,
           imageUrl: '/images/prod.avif',
           images: ['/images/prod.avif'],
+          descriptionImageUrl: '',
         })
         setActiveImage('/images/prod.avif')
         setIsLoading(false)
@@ -76,6 +77,7 @@ function ProductDetailPage() {
             prix: 29.99,
             imageUrl: '/images/prod.avif',
             images: ['/images/prod.avif'],
+            descriptionImageUrl: '',
           })
           setActiveImage('/images/prod.avif')
           setZoomOrigin('50% 50%')
@@ -169,6 +171,15 @@ function ProductDetailPage() {
           <button className="addToBag">Add to bag</button>
           <section className="product-description">
             <p className="product-summary">{product?.description || ''}</p>
+
+            {product?.descriptionImageUrl ? (
+              <div className="productDescriptionVisual">
+                <img
+                  src={product.descriptionImageUrl}
+                  alt={`${product?.nom ?? 'Product'} details`}
+                />
+              </div>
+            ) : null}
 
             <h3 className="product-details-title">Details</h3>
 
