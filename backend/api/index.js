@@ -6,7 +6,34 @@ const { attachAdminSession } = require('./middlewares/authMiddleware');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+function getAllowedOrigins() {
+    return (process.env.CORS_ALLOWED_ORIGINS || '')
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean);
+}
+
+function applyCors(req, res, next) {
+    const origin = req.headers.origin;
+    const allowedOrigins = getAllowedOrigins();
+
+    if (origin && allowedOrigins.includes(origin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Vary', 'Origin');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+        res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+    }
+
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(204);
+    }
+
+    return next();
+}
+
 // Middleware
+app.use(applyCors);
 app.use(express.json({ limit: '20mb' }));
 app.use(attachAdminSession);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
