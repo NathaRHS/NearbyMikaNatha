@@ -79,19 +79,11 @@ function HomePage() {
       <section className="productClassicCasual">
         <div className="classics">
           <img src="/images/classicImage.avif" alt="" />
-          <div className="card">
-            <h1>Classics</h1>
-            <p className="description">Timeless and elegant designs for a refined style on every occasion.</p>
-            <button>See more</button>
-          </div>
+          
         </div>
         <div className="Casual">
           <img src="/images/Casualmage.avif" alt="" />
-          <div className="card">
-            <h1>Classics</h1>
-            <p className="description">Timeless and elegant designs for a refined style on every occasion.</p>
-            <button>See more</button>
-          </div>
+          
         </div>
       </section>
       <section className="pontSection">

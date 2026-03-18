@@ -11,8 +11,7 @@ function Header() {
       <nav>
         <ul>
           <li><RouterLink to="/">Home</RouterLink></li>
-          <li><RouterLink to="/about-us">About</RouterLink></li>
-          <li><RouterLink to="/faq">Services</RouterLink></li>
+          <li><RouterLink to="/about-us">About Us</RouterLink></li>
           <li><a href="#footer">Contact</a></li>
         </ul>
       </nav>

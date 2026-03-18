@@ -49,6 +49,7 @@ function normalizeProduct(product, imageMap) {
     description: product.description || '',
     prix: product.prix,
     imageUrl: imageMap.get(product.id) || '/images/prod.avif',
+    descriptionImageUrl: product.description_image?.url || '',
   }
 }
 

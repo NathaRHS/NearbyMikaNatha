@@ -2,8 +2,6 @@
 CREATE TABLE produit (
     id SERIAL PRIMARY KEY,
     nom VARCHAR(255),
-    iddescription_image INT,
-    FOREIGN KEY (iddescription_image) REFERENCES description_image(id)
 );
 -- couleur
 CREATE TABLE couleur (
@@ -59,7 +57,8 @@ ALTER TABLE produit add prix DECIMAL(10, 2);
 
 CREATE TABLE description_image(
     id SERIAL PRIMARY KEY,
-    url VARCHAR(255)
+    url VARCHAR(255) NOT NULL
 );
 ALTER TABLE produit add iddescription_image INT;
-ALTER TABLE produit add FOREIGN KEY (iddescription_image) REFERENCES description_image(id);
+ALTER TABLE produit add CONSTRAINT fk_produit_description_image FOREIGN KEY (iddescription_image) REFERENCES description_image(id);
+ALTER TABLE produit add CONSTRAINT uq_produit_description_image UNIQUE (iddescription_image);
