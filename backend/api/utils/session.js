@@ -3,6 +3,26 @@ const crypto = require('crypto');
 const SESSION_COOKIE_NAME = process.env.SESSION_COOKIE_NAME || 'nearby_admin_session';
 const SESSION_TTL_HOURS = Number(process.env.SESSION_TTL_HOURS || 12);
 
+function isTrue(value) {
+    return typeof value === 'string' && ['true', '1', 'yes', 'on'].includes(value.toLowerCase());
+}
+
+function getCookieSecureFlag() {
+    if (typeof process.env.SESSION_COOKIE_SECURE === 'string') {
+        return isTrue(process.env.SESSION_COOKIE_SECURE);
+    }
+
+    return process.env.NODE_ENV === 'production';
+}
+
+function getCookieSameSite() {
+    return process.env.SESSION_COOKIE_SAMESITE || 'Lax';
+}
+
+function getCookieDomain() {
+    return process.env.SESSION_COOKIE_DOMAIN ? `; Domain=${process.env.SESSION_COOKIE_DOMAIN}` : '';
+}
+
 function generateSessionToken() {
     return crypto.randomBytes(48).toString('hex');
 }
@@ -41,15 +61,19 @@ function parseCookies(headerValue) {
 }
 
 function buildSessionCookie(token) {
-    const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+    const secure = getCookieSecureFlag() ? '; Secure' : '';
+    const sameSite = getCookieSameSite();
+    const domain = getCookieDomain();
     const maxAge = SESSION_TTL_HOURS * 60 * 60;
 
-    return `${SESSION_COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${maxAge}${secure}`;
+    return `${SESSION_COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=${sameSite}; Max-Age=${maxAge}${domain}${secure}`;
 }
 
 function buildClearedSessionCookie() {
-    const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
-    return `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0${secure}`;
+    const secure = getCookieSecureFlag() ? '; Secure' : '';
+    const sameSite = getCookieSameSite();
+    const domain = getCookieDomain();
+    return `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=${sameSite}; Max-Age=0${domain}${secure}`;
 }
 
 module.exports = {

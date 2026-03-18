@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS admin_user (
 
 CREATE UNIQUE INDEX IF NOT EXISTS ux_admin_user_email_lower
     ON admin_user (LOWER(email));
-
 CREATE TABLE IF NOT EXISTS admin_session (
     id SERIAL PRIMARY KEY,
     admin_user_id INT NOT NULL,
@@ -83,6 +82,8 @@ EXECUTE FUNCTION admin_user_set_updated_at();
 
 COMMIT;
 
+
+
 -- Exemple de seed (generer le hash avec: node backend/api/scripts/hashAdminPassword.js "MotDePasseFort"):
--- INSERT INTO admin_user (email, password_hash, role)
--- VALUES ('admin@nearby.local', 'scrypt$...', 'super_admin');
+INSERT INTO admin_user (email, password_hash, role)
+VALUES ('admin@nearby.local', 'scrypt$...', 'super_admin');
