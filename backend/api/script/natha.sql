@@ -1,7 +1,7 @@
 -- iraisana
 CREATE TABLE produit (
     id SERIAL PRIMARY KEY,
-    nom VARCHAR(255),
+    nom VARCHAR(255)
 );
 -- couleur
 CREATE TABLE couleur (
@@ -62,3 +62,8 @@ CREATE TABLE description_image(
 ALTER TABLE produit add iddescription_image INT;
 ALTER TABLE produit add CONSTRAINT fk_produit_description_image FOREIGN KEY (iddescription_image) REFERENCES description_image(id);
 ALTER TABLE produit add CONSTRAINT uq_produit_description_image UNIQUE (iddescription_image);
+
+
+
+CREATE USER nearby_user WITH PASSWORD 'Test1234!';
+CREATE DATABASE nearby_db OWNER nearby_user;
