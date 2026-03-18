@@ -33,6 +33,7 @@ function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState('')
   const [isZoomed, setIsZoomed] = useState(false)
   const [zoomOrigin, setZoomOrigin] = useState('50% 50%')
+  const [isDescriptionImageOpen, setIsDescriptionImageOpen] = useState(false)
 
   function handleMainImageMove(event) {
     const bounds = event.currentTarget.getBoundingClientRect()
@@ -145,40 +146,47 @@ function ProductDetailPage() {
           )}
         </div>
         <div className="right">
-          <h1 className="productName">{product?.nom ?? ''}</h1>
-          <h3 className="quality">Effortless elegance for sunny days</h3>
-          <div className="prices">
-            <p className="DetailOldPrice"></p>
-            <p className="DetailNewPrice">{formatPrice(product?.prix)}</p>
+          <div className="productPurchasePanel">
+            <h1 className="productName">{product?.nom ?? ''}</h1>
+            <h3 className="quality">Effortless elegance for sunny days</h3>
+            <div className="prices">
+              <p className="DetailOldPrice"></p>
+              <p className="DetailNewPrice">{formatPrice(product?.prix)}</p>
+            </div>
+            <div className="quantity-box">
+              <button
+                className="quantity-btn"
+                id="minus"
+                onClick={() => setQuantity((value) => Math.max(1, value - 1))}
+              >
+                -
+              </button>
+              <div className="quantity-value" id="value">{quantity}</div>
+              <button
+                className="quantity-btn"
+                id="plus"
+                onClick={() => setQuantity((value) => value + 1)}
+              >
+                +
+              </button>
+            </div>
+            <button className="addToBag">Add to bag</button>
           </div>
-          <div className="quantity-box">
-            <button
-              className="quantity-btn"
-              id="minus"
-              onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-            >
-              -
-            </button>
-            <div className="quantity-value" id="value">{quantity}</div>
-            <button
-              className="quantity-btn"
-              id="plus"
-              onClick={() => setQuantity((value) => value + 1)}
-            >
-              +
-            </button>
-          </div>
-          <button className="addToBag">Add to bag</button>
           <section className="product-description">
             <p className="product-summary">{product?.description || ''}</p>
 
             {product?.descriptionImageUrl ? (
-              <div className="productDescriptionVisual">
+              <button
+                type="button"
+                className="productDescriptionVisual"
+                onClick={() => setIsDescriptionImageOpen(true)}
+              >
                 <img
                   src={product.descriptionImageUrl}
                   alt={`${product?.nom ?? 'Product'} details`}
                 />
-              </div>
+                <span className="productDescriptionHint">Click to enlarge</span>
+              </button>
             ) : null}
 
             <h3 className="product-details-title">Details</h3>
@@ -190,6 +198,32 @@ function ProductDetailPage() {
           </section>
         </div>
       </section>
+      {product?.descriptionImageUrl && isDescriptionImageOpen ? (
+        <div
+          className="productDescriptionModal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Product details image"
+          onClick={() => setIsDescriptionImageOpen(false)}
+        >
+          <button
+            type="button"
+            className="productDescriptionModalClose"
+            onClick={() => setIsDescriptionImageOpen(false)}
+          >
+            Close
+          </button>
+          <div
+            className="productDescriptionModalBody"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <img
+              src={product.descriptionImageUrl}
+              alt={`${product?.nom ?? 'Product'} details full size`}
+            />
+          </div>
+        </div>
+      ) : null}
       <Footer />
     </div>
   )

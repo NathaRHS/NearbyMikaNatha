@@ -5,8 +5,9 @@
 }
 
 :root {
-  --page-padding: 2.5rem;
+  --page-padding: 1.5rem;
   --header-height: 9.75rem;
+  --content-max-width: 1180px;
   --surface: #ffffff;
   --surface-muted: #f7f7f5;
   --text-main: #111827;
@@ -109,6 +110,7 @@ ul {
   display: flex;
   flex-direction: column;
   gap: 15vh;
+  align-items: center;
 }
 
 header {
@@ -209,6 +211,7 @@ nav ul a:focus-visible::after {
   display: flex;
   justify-content: center;
   min-height: 78vh;
+  width: min(100%, var(--content-max-width));
 }
 
 .mainImages .bigImageRight,
@@ -315,6 +318,7 @@ nav ul a:focus-visible::after {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 28px;
   align-items: start;
+  width: min(100%, var(--content-max-width));
 }
 
 .productClassicCasual .classics,
@@ -390,16 +394,15 @@ nav ul a:focus-visible::after {
 }
 
 .productsGrid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 28px;
-  width: 100%;
+  width: min(100%, var(--content-max-width));
+  align-items: start;
 }
 
 .product {
-  width: min(100%, 250px);
+  width: 100%;
   margin: 0;
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -614,7 +617,7 @@ body.js-ready .productsGrid .product.scroll-reveal.is-visible:hover {
   }
 }
 footer {
-  width: 100%;
+  width: min(100%, var(--content-max-width));
   display: flex;
   align-items: center;
   justify-content: space-evenly;
@@ -658,6 +661,7 @@ footer .followus form button {
 
 .pontSection {
   text-align: center;
+  width: min(100%, var(--content-max-width));
 }
 .pontSection h1 {
   font-size: 4.5rem;
