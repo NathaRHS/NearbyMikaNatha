@@ -236,6 +236,15 @@ nav ul a:focus-visible::after {
     box-shadow 0.45s ease;
 }
 
+.mainImages .heroImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+
 .mainImages .bigImageRight::before,
 .mainImages .bigImageLeft::before {
   content: "";
@@ -248,14 +257,6 @@ nav ul a:focus-visible::after {
   );
   z-index: -1;
   transition: background 0.45s ease;
-}
-
-.mainImages .bigImageRight {
-  background-image: url(/images/bigImage2.avif);
-}
-
-.mainImages .bigImageLeft {
-  background-image: url(/images/bigImage1.avif);
 }
 
 .mainImages .bigImageRight:hover,

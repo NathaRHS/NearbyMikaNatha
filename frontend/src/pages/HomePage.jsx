@@ -66,11 +66,27 @@ function HomePage() {
       <Header />
       <section className="mainImages">
         <div className="bigImageRight">
+          <img
+            className="heroImage"
+            src="/images/bigImage2.avif"
+            alt=""
+            fetchPriority="high"
+            loading="eager"
+            decoding="async"
+          />
           <h3>Special offers</h3>
           <h1>Trending products</h1>
           <button className="bigButton">Shop now</button>
         </div>
         <div className="bigImageLeft">
+          <img
+            className="heroImage"
+            src="/images/bigImage1.avif"
+            alt=""
+            fetchPriority="low"
+            loading="eager"
+            decoding="async"
+          />
           <h3>Special offers</h3>
           <h1>Trending products</h1>
           <button className="bigButton">Shop now</button>
