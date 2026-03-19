@@ -78,11 +78,11 @@ function HomePage() {
       </section>
       <section className="productClassicCasual">
         <div className="classics">
-          <img src="/images/classicImage.avif" alt="" />
+          <img src="/images/classicImage.avif" alt="" loading="lazy" decoding="async" />
           
         </div>
         <div className="Casual">
-          <img src="/images/Casualmage.avif" alt="" />
+          <img src="/images/Casualmage.avif" alt="" loading="lazy" decoding="async" />
           
         </div>
       </section>
@@ -108,7 +108,13 @@ function HomePage() {
           : products.map((product) => (
               <div className="product" key={product.id}>
                 <RouterLink to={`/product-detail/${product.id}`}>
-                  <img src={product.imageUrl} alt="" width="300" />
+                  <img
+                    src={product.imageUrl}
+                    alt=""
+                    width="300"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </RouterLink>
                 <div className="productInformation">
                   <h2>{product.nom}</h2>
